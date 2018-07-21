@@ -1,0 +1,129 @@
+---
+title: "Practical Machine Learning Project"
+author: "Shangjun"
+date: "July 19, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Abstract
+
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement - a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, we will be using data from accelerometers on the belt, forearm, arm, and dumbbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: <http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har> (see the section on the Weight Lifting Exercise Dataset).
+
+## Data Source
+
+Train Data: <https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv>
+
+Test Data: <https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv>
+
+More info: <http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har>
+
+## Technique
+
+"classe" variable is the outcome (what we try to predict). This data set collects information about participants who were asked to perform one set of 10 repetitions of the Unilateral Dumbbell Biceps Curl in 5 different fashions:
+
+* Class A: exactly according to the specification
+
+* Class B: throwing the elbows to the front
+
+* Class C: lifting the dumbbell only halfway
+
+* Class D: lowering the dumbbell only halfway
+
+* Class E: throwing the hips to the front
+
+We will be building Decision Tree and Random Forest models. And will submit the model with the highest accuracy. To measure accuracy, we will be using cross-validation (subset again the train dataset to 75% train data [call it "SubTrainData"] and 25% test data [call it "SubTestData"], find the most accurate model then implement on the original test dataset).
+
+
+The expected out-of-sample error will correspond to the quantity: 1-accuracy in the cross-validation data. Accuracy is the proportion of correct classified observation over the total sample in the SubTestData data set. Expected accuracy is the expected accuracy in the out-of-sample dataset (i.e. original test data set). Thus, the expected value of the out-of-sample error will correspond to the expected number of missclassified observations/total observations in the Test dataset, which is the quantity: 1-accuracy found from the cross-validation data set.
+
+## Preprocessing
+
+```{r}
+# load package 
+library(lattice)
+library(ggplot2)
+library(caret)
+library(randomForest)
+library(rpart)
+library(rpart.plot)
+```
+
+
+```{r, cache=TRUE}
+set.seed(1234)
+
+# load and clean data
+train.data <- read.csv("pml-training.csv", na.strings = c("NA", "#DIV/0!", ""))
+test.data <- read.csv("pml-testing.csv", na.strings = c("NA", "#DIV/0!", ""))
+
+dim(train.data)
+dim(test.data) 
+```
+
+```{r}
+# Remove columns with all missing values
+train.data <- train.data[,colSums(is.na(train.data)) == 0]
+test.data <- test.data[,colSums(is.na(test.data)) == 0]
+
+# Remove irrelevant variables: user_name, raw_timestamp_part_1, raw_timestamp_part_,2 cvtd_timestamp, new_window, and num_window (columns 1 to 7). 
+train.data   <- train.data[,-c(1:7)]
+test.data <- test.data[,-c(1:7)]
+
+# partition the original train dataset into 75% training dataset and 25% test dataset
+sub.train <- createDataPartition(y=train.data$classe, p=0.75, list=FALSE)
+sub.train.data <- train.data[sub.train, ] 
+sub.test.data <- train.data[-sub.train, ]
+
+# The variable "classe" contains 5 levels: A, B, C, D and E. Draw a bar plot to show the frequency of each class level
+plot(sub.train.data$classe, col=" light blue", main="Classe Level within the sub.train.data dataset", xlab="classe", ylab="Frequency", ylim = c(0,5000))
+```
+
+The graph shows that Classe A is the most frequent level while Classe D is least frequent. 
+
+## Decision Tree
+```{r}
+tree.model <- rpart(classe ~ ., data=sub.train.data, method="class")
+tree.prediction <- predict(tree.model, sub.test.data, type = "class")
+
+# Plot the Decision Tree
+rpart.plot(tree.model, main="Decision Tree", extra=102, under=TRUE, faclen=0)
+```
+
+(Go to the "figure" file in my repository, zoom in to see a larger graph)
+
+```{r}
+# Test results on our sub.test.data dataset:
+confusionMatrix(tree.prediction, sub.test.data$classe)
+```
+
+## Random Forest
+```{r, cache=TRUE}
+rf.model <- randomForest(classe ~., data=sub.train.data, method="class")
+
+# Predicting:
+rf.prediction <- predict(rf.model, sub.test.data, type = "class")
+
+# Test results on sub.test.data dataset:
+confusionMatrix(rf.prediction, sub.test.data$classe)
+```
+
+## Which Model to Use?
+
+We will be using Random Forest Model as it has higher accuracy than the Decision Tree Model:
+
+* Random Forest: Accuracy: 0.9955; 95% CI: (0.9932, 0.9972)
+
+* Decision Tree: Accuracy: 0.7394; 95% CI : (0.7269, 0.7516)
+
+The expected out-of-sample error is estimated at 0.005, or 0.5%.
+
+## Submission of Random Forest Model to the Original Test Dataset
+```{r}
+# predict outcome levels on the original Testing data set
+final.prediction <- predict(rf.model, test.data, type="class")
+final.prediction
+```
