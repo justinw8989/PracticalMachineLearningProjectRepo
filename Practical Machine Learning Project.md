@@ -251,7 +251,7 @@ confusionMatrix(rf.prediction, sub.test.data$classe)
 
 ## Which Model to Use?
 
-We will be using Random Forest Model as it has higher accuracy than the Decision Tree Model:
+I will be using Random Forest Model as it has higher accuracy than the Decision Tree Model:
 
 * Random Forest: Accuracy: 0.9955; 95% CI: (0.9932, 0.9972)
 
