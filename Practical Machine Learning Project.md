@@ -9,7 +9,7 @@ output: html_document
 
 ## Abstract
 
-Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement - a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, we will be using data from accelerometers on the belt, forearm, arm, and dumbbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: <http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har> (see the section on the Weight Lifting Exercise Dataset).
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement - a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantifying how much of a particular activity they do, but they rarely quantify how well they do it. In this project, I will be using data from accelerometers on the belt, forearm, arm, and dumbbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here: <http://web.archive.org/web/20161224072740/http:/groupware.les.inf.puc-rio.br/har> (see the section on the Weight Lifting Exercise Dataset).
 
 ## Data Source
 
@@ -21,7 +21,7 @@ More info: <http://web.archive.org/web/20161224072740/http:/groupware.les.inf.pu
 
 ## Technique
 
-"classe" variable is the outcome (what we try to predict). This data set collects information about participants who were asked to perform one set of 10 repetitions of the Unilateral Dumbbell Biceps Curl in 5 different fashions:
+"classe" variable is the outcome (what I try to predict). This data set collects information about participants who were asked to perform one set of 10 repetitions of the Unilateral Dumbbell Biceps Curl in 5 different fashions:
 
 * Class A: exactly according to the specification
 
@@ -33,7 +33,7 @@ More info: <http://web.archive.org/web/20161224072740/http:/groupware.les.inf.pu
 
 * Class E: throwing the hips to the front
 
-We will be building Decision Tree and Random Forest models. And will submit the model with the highest accuracy. To measure accuracy, we will be using cross-validation (subset again the train dataset to 75% train data [call it "SubTrainData"] and 25% test data [call it "SubTestData"], find the most accurate model then implement on the original test dataset).
+I will be building Decision Tree and Random Forest models. And will submit the model with the highest accuracy. To measure accuracy, I will be using cross-validation (subset again the train dataset to 75% train data [call it "SubTrainData"] and 25% test data [call it "SubTestData"]).
 
 
 The expected out-of-sample error will correspond to the quantity: 1-accuracy in the cross-validation data. Accuracy is the proportion of correct classified observation over the total sample in the SubTestData data set. Expected accuracy is the expected accuracy in the out-of-sample dataset (i.e. original test data set). Thus, the expected value of the out-of-sample error will correspond to the expected number of missclassified observations/total observations in the Test dataset, which is the quantity: 1-accuracy found from the cross-validation data set.
